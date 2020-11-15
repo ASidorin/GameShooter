@@ -1,7 +1,9 @@
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -16,7 +18,10 @@ public class GamePanel extends JPanel implements Runnable{
 	private BufferedImage image;
 	private Graphics2D g;
 	private Thread thread;
-	private GameBack background;
+	
+	private static GameBack background;
+	public static Player player;
+	public static ArrayList<Bullet> bullets;
 	
 	//Constructor
 	public GamePanel() {
@@ -25,6 +30,8 @@ public class GamePanel extends JPanel implements Runnable{
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		setFocusable(true);
 		requestFocus();
+		
+		addKeyListener(new Listeners());
 		
 	
 	}
@@ -43,8 +50,12 @@ public class GamePanel extends JPanel implements Runnable{
 		
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		g = (Graphics2D) image.getGraphics();
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		background = new GameBack();
+		player = new Player();
+		bullets = new ArrayList<Bullet>();
+		
 		
 		
 		while(true) {      //TODO State
@@ -67,19 +78,30 @@ public class GamePanel extends JPanel implements Runnable{
 	public void gameUpdate() {
 		
 		background.update();
-		//player.update();
+		player.update();
+		
+		for(int i = 0; i < bullets.size(); i++) {
+			bullets.get(i).update();
+		}
 	}
 	
 	
 	public void gameRender() {
 		
 		background.draw(g);
+		player.draw(g);
+		
+		for(int i = 0; i < bullets.size(); i++) {
+			bullets.get(i).draw(g);
+		}
+		
 	}
 	
 	private void gameDraw() {
 		Graphics g2 = this.getGraphics();
 		g2.drawImage(image, 0, 0, null);
 		g2.dispose();
+		
 	}
 	
 	
